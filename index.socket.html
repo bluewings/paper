@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="todo">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To do List</title>
+<!--link rel="stylesheet" href="css/outlaw.css"--> 
+<style>
+.done-true {
+    text-decoration: line-through;
+    color: grey;
+}    
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+<script type="text/javascript" src="js/socket.io.js"></script>
+</head>
+<body>
+<div id="wrap">
+    <h2>Todo</h2>
+    <div ng-controller="TodoCtrl">
+        <span>{{remaining()}} of {{shared.todos.length}} remaining</span>
+        [ <a href="" ng-click="archive()">archive</a> ]
+        <ul class="unstyled">
+            <li ng-repeat="todo in shared.todos">
+                <label>
+                    <input type="checkbox" ng-model="todo.done" ng-click="reportToggle()">
+                    <span class="done-{{todo.done}}">{{todo.text}}</span>
+                </label>
+            </li>
+        </ul>
+        <form ng-submit="addTodo()">
+            <input type="text" ng-model="todoText"  size="30"
+            placeholder="add new todo here">
+            <input class="btn-primary" type="submit" value="add">
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="js/todo.socket.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="paper">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper</title>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/paper.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+<script type="text/javascript" src="js/jquery.isotope.js"></script>
+</head>
+<body>
+<div id="wrap">
+    <div ng-controller="MainCtrl" class="container">
+        <div data-role="tile-list">
+            <div ng-repeat="article in articles" class="tile-wrap">
+                <div class="tile">
+                <button class="btn btn-default js-flip-tile">flip</button>
+                {{$index}} . 
+                {{article.description}}
+                <br>
+                actor : {{article.actor_id}}
+                <br>
+                {{article.message}}
+                <div ng-show="article.attachment && article.attachment.description" class="well">
+                    {{article.attachment.description}}
+                </div>
+                <br>
+                <img ng-repeat="photo in article.photos" src="{{photo.src}}" width="{{photo.width}}" height="{{photo.height}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="js/paper.js"></script>
+<script type="text/javascript" src="js/paper.services.js"></script>
+<script type="text/javascript" src="js/paper.controllers.main.js"></script>
+</body>
+</html>

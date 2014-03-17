@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To do List</title>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<style>
+label {
+    font-weight:normal;
+}
+.done-true {
+    text-decoration: line-through;
+    color: grey;
+}    
+.list-group {
+    margin-bottom:15px;
+}
+.list-group-item {
+    padding:5px 10px;
+}
+.well {
+    padding:10px;
+    margin-bottom:15px;
+}
+html {
+    /*background-image:url(img/wpid-07.jpg);*/
+    background-image:url(img/1-iPhone-5-Wallpaper-iOS7-default-green-3.jpg);
+    background-image:url(img/bg_glass.jpg);
+    background-size:cover;
+    background-position:50% 50%;
+    height:100%;
+}
+body {
+    background-color:transparent;
+}
+input[type="text"] {
+    background-color:rgba(0,0,0,0.5);
+    color:#fff;
+}
+
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+</head>
+<body>
+<div id="wrap">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <!--button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button-->
+          <a class="navbar-brand" href="#">
+          <span class="glyphicon glyphicon-inbox"></span>
+          Project name
+          </a>
+        </div>
+        <!--div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <h2>Todo</h2>
+    
+    <div ng-controller="TodoCtrl" class="container">
+        <div class="well">{{remaining()}} of {{todos.length}} remaining
+        [ <a href="" ng-click="archive()">archive</a> ]
+        </div>
+        <ul class="list-group">
+            <li ng-repeat="todo in todos" class="list-group-item">
+                <label>
+                    <input type="checkbox" ng-model="todo.done">
+                    <span class="done-{{todo.done}}">{{todo.text}}</span>
+                    <span class="glyphicon glyphicon-bookmark" style="color: red;
+font-size: 28px;
+position: absolute;
+right: 10px;
+top: 0;"></span>
+                </label>
+            </li>
+        </ul>
+        <form ng-submit="addTodo()" class="input-group">        
+            <input type="text" ng-model="todoText" size="30" placeholder="add new todo here" class="form-control">
+            <span class="input-group-btn">
+                <input class="btn btn-primary" type="submit" value="add">
+            </span>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="js/todo.js"></script>
+<!--script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script-->
+</body>
+</html>
