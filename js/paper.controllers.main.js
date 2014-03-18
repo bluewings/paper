@@ -80,7 +80,26 @@
             onTileFlip.x = event.pageX;
             onTileFlip.y = event.pageY;
             onTileFlip.target = $(this);
+            onTileFlip.tileIndex = parseInt(onTileFlip.target.attr('data-tile-index'), 10);
+            
         });
+        
+        function fillNews(el, index) {
+            console.log(index, $scope.articles);
+            var url = $scope.articles[index].url;
+        
+            SportsNews.getNewsContent(url, function (content) {
+                console.log(content);
+                
+                el.html(content.replace(/<img.*?>/g, ' '));
+                //$scope.$root.safeApply(function () {
+
+
+                    //$scope.html = content;
+                //});
+            });        
+            
+        }            
 
         $element.on('mousemove touchmove', function (event) {
 
@@ -104,6 +123,7 @@
                     onTileFlip.distance = $(this).outerWidth() / 2 > event.offsetX ? $(this).outerWidth() - event.offsetX : event.offsetX;
                     onTileFlip.degree = 0;
                     onTileFlip.frontside.parent().append(onTileFlip.backside).addClass('front');
+                    fillNews(onTileFlip.backside, onTileFlip.tileIndex);
                 }
             } else {
 

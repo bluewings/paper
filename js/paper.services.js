@@ -3,10 +3,14 @@
     'use strict';
 
     var w = window,
-        config, ready = false;
+        config, ready = false, cache = {};
 
     config = {
         appId: '591654544205657'
+    };
+    
+    cache = {
+        newsContent: {}
     };
 
     var module = angular.module('paper.services', []).value('version', '0.1');
@@ -24,9 +28,15 @@
             },
             getNewsContent: function(url, callback) {
                 
-                $http.jsonp('http://10.64.51.102:100/data/getNewsContent.json?url=' + encodeURIComponent(url) + '&callback=JSON_CALLBACK').success(function(data){
-                    console.log(data);
+                if (cache.newsContent[url]) {
                     if (callback && typeof callback == 'function') {
+                        callback(cache.newsContent[url]);
+                    }                    
+                }
+                
+                $http.jsonp('http://10.64.51.102:100/data/getNewsContent.json?url=' + encodeURIComponent(url) + '&callback=JSON_CALLBACK').success(function(data){
+                    if (callback && typeof callback == 'function') {
+                        cache.newsContent[url] = data.content;
                         callback(data.content);
                     }
                 });
