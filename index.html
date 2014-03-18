@@ -2,34 +2,34 @@
 <html ng-app="paper">
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
 <title>Paper</title>
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/paper.css">
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.2/angular-sanitize.js"></script>
 <script type="text/javascript" src="js/jquery.isotope.js"></script>
 </head>
 <body>
 <div id="wrap">
+
+
     <div ng-controller="MainCtrl" class="container">
+    <span ng-bind-html="html"></span>
+    
         <div data-role="tile-list">
             <div ng-repeat="article in articles" class="tile-wrap">
-                <div class="tile">
-                <button class="btn btn-default js-flip-tile">flip</button>
-                {{$index}} . 
-                {{article.description}}
-                <br>
-                actor : {{article.actor_id}}
-                <br>
-                {{article.message}}
-                <div ng-show="article.attachment && article.attachment.description" class="well">
-                    {{article.attachment.description}}
-                </div>
-                <br>
-                <img ng-repeat="photo in article.photos" src="{{photo.src}}" width="{{photo.width}}" height="{{photo.height}}">
-                </div>
+            <div class="tile"
+                ng-click="viewContent(article.url)"
+                ng-style="{backgroundImage:'url(' + article.image + ')'}">
+                <strong>
+                {{$index}}. {{article.title}}
+                </strong>
+                
+                
+            </div>
             </div>
         </div>
     </div>
@@ -37,5 +37,191 @@
 <script type="text/javascript" src="js/paper.js"></script>
 <script type="text/javascript" src="js/paper.services.js"></script>
 <script type="text/javascript" src="js/paper.controllers.main.js"></script>
+<script>
+$(document).ready(function () {
+
+    var onTileFlip = {};
+
+    function getOriginalEvent(event) {
+        //console.log(event.originalEvent);
+        
+
+
+        if (event && event.type && event.type.search(/touch/) != -1) {
+            event = event.originalEvent.touches[0];
+            event.offsetX = event.pageX - $(event.target).offset().left;
+            event.offsetY = event.pageY - $(event.target).offset().top;
+            return event;
+        } else {
+            return event;
+        }
+    }
+    
+    return;
+
+    $(document.body).delegate('.tile', 'mousedown touchstart', function (event) {
+
+
+        //console.log('www');
+        if (onTileFlip.on) {
+            return;
+        }
+
+        event = getOriginalEvent(event);
+
+
+
+        var tileWidth = $(this).outerWidth();
+
+        console.log(event);
+        
+        $(document.body).find('.backside').remove();
+
+        onTileFlip = {
+            //on: true,
+            x: event.pageX,
+            y: event.pageY,
+            el: $(this),
+            flipToRight: tileWidth / 2 > event.offsetX ? true : false,
+            distance: tileWidth - event.offsetX,
+            deg: 0,
+            backside: $('<div class="backside"> I am backside</div>')
+        };
+        
+        onTileFlip.el.parent().append(onTileFlip.backside);
+
+        onTileFlip.distance = onTileFlip.flipToRight ? tileWidth - event.offsetX : event.offsetX;
+
+        //console.log(flip);
+
+        //console.log(event.pageX, event.pageY);
+        //console.log(event.clientX, event.clientY);
+        //console.log($(this).outerWidth());
+        //console.log(event.offsetX, event.offsetY);
+
+
+
+
+    });
+    
+    var animFrame;
+    
+    function ___flip(el, deg) {
+        
+        //cancelAnimationFrame(animFrame);
+        
+        //animFrame = requestAnimationFrame(function() {
+            
+        
+
+
+            if (Math.abs(deg) > 90) {
+                //flip.el.css('border', '2px solid yellow')    ;
+               // el.css('visibility', 'hidden')    ;
+               
+               onTileFlip.backside.css({
+                   display: 'block',
+                    WebkitTransform: 'rotateY(' + (deg + 180) + 'deg)',
+                    height: 150 + Math.abs(deg)
+                    //,                opacity: Math.abs(Math.abs( deg) - 90)/ 90
+                });        
+            } else {
+                onTileFlip.backside.css({
+                   display: 'none'
+                });        
+                //el.css('visibility', 'visible')    ;
+                
+            }
+            
+            
+            //console.log(Math.abs(Math.abs( deg) - 90)/ 90);
+
+            el.css({
+                WebkitTransform: 'rotateY(' + deg + 'deg)',
+                height: 150 + Math.abs(deg)
+                
+                //,                opacity: Math.abs(Math.abs( deg) - 90)/ 90
+            });        
+            
+        //});
+    }
+    
+
+    $(document.body).on('mousemove touchmove', function (event) {
+        var delta;
+        
+        event = getOriginalEvent(event);
+        if (!onTileFlip.on) {
+            
+            
+            deltaX = Math.abs(event.pageX - onTileFlip.x);
+            deltaY = Math.abs(event.pageY - onTileFlip.y);
+            
+            
+            if (deltaX > 30 && deltaX > deltaY) {
+                onTileFlip.on = true;
+            }
+            onTileFlip.el.parent().addClass('front');
+            
+        }
+        //console.log('mousemove');
+        if (onTileFlip.on) {
+            event = getOriginalEvent(event);
+            //distance: 280
+            //console.log('delta : ' + (onTileFlip.x - event.pageX));   
+
+            onTileFlip.deg = ((event.pageX - onTileFlip.x) / onTileFlip.distance) * 180;
+            
+            ___flip( onTileFlip.el, onTileFlip.deg);
+            
+
+        }
+
+
+    });
+
+    $(document.body).on('mouseup touchend', function (event) {
+        
+        var el;
+        //console.log('mousemove');
+        if (onTileFlip.on) {
+            //event = getOriginalEvent(event);
+            if (onTileFlip.deg) {
+                //console.log('>>>>>');
+                
+                el = onTileFlip.el;
+
+                el.stop().css('borderSpacing', onTileFlip.deg);
+
+                el.animate({
+                    borderSpacing: 0
+                }, {
+                    duration: 700,
+                    step: function (now, fx) {
+                        // console.log(fx);
+                        if (fx.prop == 'borderSpacing') {
+                            
+                            
+                            ___flip( el, now);
+                            //     console.log(now);
+                                         
+                        }
+                    }
+                });
+
+            }
+            onTileFlip.on = false;
+            setTimeout(function() {
+                onTileFlip.el.parent().removeClass('front');    
+            }, 750);
+            
+            //console.log('delta : ' + (flip.x - event.pageX));    
+        }
+
+
+    });
+
+});
+</script>
 </body>
 </html>

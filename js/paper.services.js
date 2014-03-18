@@ -11,6 +11,29 @@
 
     var module = angular.module('paper.services', []).value('version', '0.1');
 
+    module.factory('SportsNews', ['$http', function ($http) {
+
+        return {
+            getNewsList: function(callback) {
+                
+                $http.jsonp('http://10.64.51.102:100/data/getNewsList.json?callback=JSON_CALLBACK').success(function(data){
+                    if (callback && typeof callback == 'function') {
+                        callback(data.newsList);
+                    }
+                });
+            },
+            getNewsContent: function(url, callback) {
+                
+                $http.jsonp('http://10.64.51.102:100/data/getNewsContent.json?url=' + encodeURIComponent(url) + '&callback=JSON_CALLBACK').success(function(data){
+                    console.log(data);
+                    if (callback && typeof callback == 'function') {
+                        callback(data.content);
+                    }
+                });
+            }
+        };
+    }]);
+
     module.factory('Facebook', ['$http', function ($http) {
 
         var prepare = function () {
@@ -73,16 +96,14 @@
                 }, 0);
             }
         };
-        
-        function getPhotos(item) {
-            
-            var photos = [], inx, image;
-            
+
+        var getPhotos = function(item) {
+
+            var photos = [],
+                inx, image;
+
             if (item.attachment && item.attachment.media) {
-                if (item.attachment.media.length > 0) {
-                    //console.log('>> media length : ' + item.attachment.media.length);    
-                }
-                
+
                 for (inx = 0; inx < item.attachment.media.length; inx++) {
                     if (item.attachment.media[inx].type == 'photo') {
                         if (item.attachment.media[inx].photo.images) {
@@ -91,26 +112,12 @@
                                 width: image.width,
                                 height: image.height,
                                 src: image.src
-                           });
-                        } else {
-                            /*photos.push({
-                                src: item.attachment.media[inx].src
-                            });*/
+                            });
                         }
-                        
-                        //photos.push(item.attachment.media[inx]);
                     }
                 }
             }
-            
-            //if (photos.length > 0) {
-                //console.log(photos);
-            //}
-            
             return photos;
-            
-            //for (inx = 0; inx < item)
-            
         }
 
         return {
@@ -124,23 +131,18 @@
                         method: 'fql.query',
                         query: "SELECT action_links,actor_id,app_data,app_id,attachment,attribution,claim_count,comment_info,created_time,description,description_tags,expiration_timestamp,feed_targeting,filter_key,impressions,is_exportable,is_hidden,is_published,like_info,likes,message,message_tags,parent_post_id,permalink,place,post_id,privacy,promotion_status,scheduled_publish_time,share_count,share_info,source_id,subscribed,tagged_ids,target_id,targeting,timeline_visibility,type,updated_time,via_id,viewer_id,with_location,with_tags,xid FROM stream WHERE filter_key = 'owner' LIMIT 100"
                     }, function (response) {
-                        
-                        var streams = [], inx, each;
-                        
+
+                        var streams = [],
+                            inx, each;
+
                         for (inx = 0; inx < response.length; inx++) {
                             each = response[inx];
-                            
                             if (each.message) {
                                 each.photos = getPhotos(response[inx]);
-                                streams.push(each);    
+                                streams.push(each);
                             }
-                            
-                            
-                            
-                            
-                                
                         }
-                        
+
                         if (callback && typeof callback == 'function') {
                             callback(streams);
                         }
